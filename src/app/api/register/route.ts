@@ -5,6 +5,7 @@ import { validateSchema } from '@/utils/validate-schema';
 import { parseOtp } from '@/lib/yubico-otp';
 import { redis } from '@/infrastructure/redis';
 import { decrypt, encrypt } from '@/lib/encryption';
+import { RedisRecord } from '@/types';
 
 const schema = yup.object({
   publicId: yup.string().required().lowercase(),
@@ -14,13 +15,6 @@ const schema = yup.object({
 });
 
 export type RegisterBody = yup.InferType<typeof schema>;
-
-type RedisRecord = {
-  privateId: string;
-  secretKey: string;
-  counter: number;
-  sessionCounter: number;
-};
 
 export const POST = async (req: NextRequest) => {
   // Handle body
