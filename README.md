@@ -3,6 +3,8 @@ This project is a fully functional Yubico Validation Server for
 registering and validating Yubico OTPs. You can use this instead of
 YubiCloud.
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fitaibo%2Fyubico-validation-server&env=ENCRYPTION_KEY,UPSTASH_REDIS_URL,UPSTASH_REDIS_TOKEN)
+
 ## Motivation
 Apart from having bought a YubiKey, and wanting to do something for
 it, I found that registering a key in YubiCloud gives you no guarantees
