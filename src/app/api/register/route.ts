@@ -4,7 +4,7 @@ import * as yup from 'yup';
 import { validateSchema } from '@/utils/validate-schema';
 import { parseOtp } from '@/lib/yubico-otp';
 import { redis } from '@/infrastructure/redis';
-import { decrypt, encrypt } from '@/lib/encryption';
+import { encrypt } from '@/lib/encryption';
 import { RedisRecord } from '@/types';
 
 const schema = yup.object({
