@@ -58,11 +58,21 @@ const modhexDecode = (s: string) => {
   return w;
 };
 
-export const parseOtp = (params: { otp: string, key: string }) => {
+type ParsedOtp = {
+  pubUid: string;
+  uid: string;
+  useCtr: number;
+  tstp: number;
+  sessionCtr: number;
+  rnd: number;
+  crc: number;
+};
+
+export const parseOtp = (params: { otp: string, key: string }): ParsedOtp | null => {
   let data, decipher, msg, pub_id, result;
 
   const otp: RegExpExecArray | null = /^([cbdefghiujklnrtuv]{2,32})([cbdefghiujklnrtuv]{32})$/.exec(params.otp);
-  if (!otp) return false;
+  if (!otp) return null;
 
   const key = Buffer.from(params.key, 'hex');
   pub_id = otp[1];
@@ -72,13 +82,13 @@ export const parseOtp = (params: { otp: string, key: string }) => {
   try {
     decipher = crypto.createDecipheriv('aes-128-ecb', key, '');
   } catch {
-    return false;
+    return null;
   }
-  
+
   decipher.setAutoPadding(false);
   data = Buffer.concat([decipher.update(msg), decipher.final()]);
 
-  if ((crc16(data)) !== 0xf0b8) return false;
+  if ((crc16(data)) !== 0xf0b8) return null;
 
   result = {
     pubUid: pub_id,

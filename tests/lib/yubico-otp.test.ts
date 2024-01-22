@@ -13,12 +13,12 @@ const validOtps = [
 ];
 
 describe('Yubico OTP parser module', () => {
-  it('Must return false on invalid OTP code', () => {
-    expect(parseOtp({ otp: 'invalidOtpCode', key: 'secretKey' })).toBe(false);
+  it('Must return null on invalid OTP code', () => {
+    expect(parseOtp({ otp: 'invalidOtpCode', key: 'secretKey' })).toBe(null);
   });
 
-  it('Must return false on invalid key', () => {
-    expect(parseOtp({ otp: validOtps[0], key: 'secretKey' })).toBe(false);
+  it('Must return null on invalid key', () => {
+    expect(parseOtp({ otp: validOtps[0], key: 'secretKey' })).toBe(null);
   });
 
   it('Must return parsed OTP', () => {
