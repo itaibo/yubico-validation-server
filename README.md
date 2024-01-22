@@ -57,10 +57,10 @@ Responses can be `403` or `200`.
 
 ```
 // 403
-{ "error": "MESSAGE", isValid: false }
+{ "error": "MESSAGE", "isValid": false }
 
 // 200
-{ "success": true, isValid: true, publicId: "cccjgjgkhcbb" }
+{ "success": true, "isValid": true, "publicId": "cccjgjgkhcbb" }
 ```
 
 ## Running it
