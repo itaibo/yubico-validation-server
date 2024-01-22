@@ -3,15 +3,24 @@ import * as yup from 'yup';
 
 import { validateSchema } from '@/utils/validate-schema';
 import { parseOtp } from '@/lib/yubico-otp';
+import { redis } from '@/infrastructure/redis';
+import { decrypt, encrypt } from '@/lib/encryption';
 
 const schema = yup.object({
-  publicId: yup.string().required(),
-  privateId: yup.string().required(),
+  publicId: yup.string().required().lowercase(),
+  privateId: yup.string().required().lowercase(),
   secretKey: yup.string().required(),
   otp: yup.string().required(),
 });
 
 export type RegisterBody = yup.InferType<typeof schema>;
+
+type RedisRecord = {
+  privateId: string;
+  secretKey: string;
+  counter: number;
+  sessionCounter: number;
+};
 
 export const POST = async (req: NextRequest) => {
   // Handle body
@@ -44,11 +53,28 @@ export const POST = async (req: NextRequest) => {
 
   // Check if public ID already registered.
   // If private key is the same, can rewrite.
+  const existingKey = await redis.hgetall(parsed.publicId) as RedisRecord;
 
-  // Encrypt secret key and private key
+  if (existingKey) {
+    const decryptedPrivateId = decrypt(existingKey.privateId);
+
+    if (decryptedPrivateId !== parsed.privateId) {
+      return NextResponse.json({ error: 'Key is already registered' }, { status: 403 });
+    }
+  }
+
+  // Encrypt private ID and secret key
+  const encryptedPrivateId = encrypt(parsed.privateId);
+  const encryptedSecretKey = encrypt(parsed.secretKey);
 
   // Register key in database
-  // publicId: { secretKey, privateKey, sessionCounter, counter }
+  // publicId: { secretKey, privateId, counter, sessionCounter }
+  await redis.hset(parsed.publicId, {
+    secretKey: encryptedSecretKey,
+    privateId: encryptedPrivateId,
+    counter: parsedOtp.useCtr,
+    sessionCounter: parsedOtp.sessionCtr,
+  });
 
-  return NextResponse.json({ success: true }, { status: 200 });
+  return NextResponse.json({ success: true, message: `Key ${existingKey ? 'updated' : 'registered'}` }, { status: 200 });
 };

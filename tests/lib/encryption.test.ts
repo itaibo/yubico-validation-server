@@ -1,6 +1,6 @@
 import { encrypt, decrypt } from '@/lib/encryption';
 
-const strings: {plain: string, encrypted: string | null} = {
+const strings: { plain: string, encrypted: string | null } = {
   plain: 'hey',
   encrypted: null,
 };
